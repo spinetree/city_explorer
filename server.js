@@ -1,3 +1,5 @@
+/* eslint-disable new-cap */
+/* eslint-disable no-unused-vars */
 'use strict';
 
 // dependencies
@@ -10,8 +12,13 @@ const superagent = require('superagent');
 require('dotenv').config();
 
 
-// requires from externals
-// require('./constructors');
+// Constructor Functions
+let locations = require('./location.js');
+let Location = locations.Location;
+// do not fully grok this last piece, gotten from https://stackabuse.com/how-to-use-module-exports-in-node-js/ but seems to work
+
+//test
+Location('derp','derpFormatted','234234','q34');
 
 
 // initiate app
@@ -26,11 +33,13 @@ const PORT = process.env.PORT || 3001;
 // routes
 app.get('*', () => console.log('default route here') )
 
-// tell the app to start listening 
+// tell the app to start listening
 app.listen(PORT, () => console.log(`Listening on ${PORT}, let's party`) )
 
 // helper functions
+
 // error handler
 
 // constructor functions
+
 
