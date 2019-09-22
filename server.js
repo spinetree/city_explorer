@@ -96,11 +96,7 @@ function getLocation(request, response) {
 
 function getWeather(request, response) {
 
-  // let query = request.query.data;
-
   let weatherUrl = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${currentLocation.latitude},${currentLocation.longitude}`;
-
-  // console.log(weatherUrl);
 
   superAgent.get(weatherUrl)
     .then(darkSkyObj => {
@@ -108,11 +104,6 @@ function getWeather(request, response) {
       let localForecast = darkSkyObj.body.daily.data.map(day => new Weather(day));
 
       response.send(localForecast);
-
-      //   const dailyWeather = darkSkyArr.map(day => new Weather(day));
-      // take weather for each day and feed into weather constructor
-
-      //   console.log(dailyWeather);
 
     })
     .catch(error => {
@@ -122,7 +113,7 @@ function getWeather(request, response) {
 }
 
 
-// ----- error handlr
+// ----- error handler
 
 function errorHandler(error, reqest, response) {
   console.error(error);
