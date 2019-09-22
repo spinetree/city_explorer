@@ -4,7 +4,7 @@
 
 // globals
 
-let currentLocation;
+let currentLocation = {};
 
 
 
@@ -38,14 +38,9 @@ app.listen(PORT, () => console.log(`Listening on ${PORT}, let's party`) )
 
 // ---------- routes
 
-app.get('/weather', () => console.log('hit /weather') );
+app.get('/location', (request, response) => {getLocation(request, response);});
 
-app.get('/location', (request, response) => {
-  console.log('response');
-  console.log(response);
-  getLocationGoogle(request, response);
-}
-);
+app.get('/weather', () => console.log('hit /weather') );
 
 app.get('*', () => console.log('default route here') );
 
@@ -53,7 +48,8 @@ app.get('*', () => console.log('default route here') );
 
 // ---------- imports
 
-// Constructor Functions
+const errorHandler = require('./error-handler.js');
+
 // do not fully grok this second line which seems to only be for constructor functions, gotten from https://stackabuse.com/how-to-use-module-exports-in-node-js/ but seems to work
 
 let locations = require('./location.js');
@@ -66,38 +62,41 @@ let events = require('./event.js');
 let Event = events.Event;
 
 
+
+// HELPER FUNCTION HELLSCAPE --------------------
+
+
 // ---------- get location from google
 
-function getLocationGoogle(request, response) {
+function getLocation(request, response) {
 
   let query = request.query.data;
-  let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
 
-  console.log(`geocode url: ${geocodeUrl}`);
+  let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
+  console.log(geocodeUrl);
 
   superAgent.get(geocodeUrl)
     .then(googleResponse => {
-      // console.log(googleResponse);
-      // run through constructor function
+
+      let formatted_query = googleResponse.body.results[0].formatted_address;
+      let longitude = googleResponse.body.results[0].geometry.location.lng;
+      let latitude = googleResponse.body.results[0].geometry.location.lat;
+
+      console.log(`Tried to make location ${currentLocation} from search ${query} at ${latitude},${longitude}`);
+
+      currentLocation = new Location(query, formatted_query, latitude, longitude);
+      console.log(`Set location to ${currentLocation}`);
+
       response.send(currentLocation);
+
     })
     .catch(error => {
-      errorHandler(error,request, response)
-    }
-    )
+      errorHandler(error, request, response)
+    });
+
 }
 
 
-
-
-
-
-// ---------- error handler
-
-function errorHandler(error, reqest, response) {
-  console.error(error);
-  response.status(500).send('errorHandler says: Something went wrong');
-}
 
 
 // --------------- tests
@@ -105,3 +104,6 @@ function errorHandler(error, reqest, response) {
 // Location('derpQuery','derpFormatted','234234','q34');
 // Weather({summary:'Example daily summary', time: 8287888399});
 // Event({url:'someURL', name: {text:'thisname'}, start: {local:[3,4,5,2,24,5]} });
+
+
+module.exports = {superAgent: superAgent};
