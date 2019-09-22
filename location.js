@@ -10,4 +10,16 @@ function Location(query, formatted_query, longitude, latitude) {
 
 }
 
-module.exports = {Location: Location};
+Location.prototype = {
+
+  // am I in database?
+
+  // add self to database
+
+}
+
+module.exports = {
+  Location: Location
+};
+
+
