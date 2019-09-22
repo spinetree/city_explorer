@@ -7,7 +7,6 @@
 let currentLocation = {};
 
 
-
 // ---------- Dependencies
 
 const express = require('express');
@@ -42,8 +41,9 @@ app.get('/location', (request, response) => getLocation(request, response) );
 
 app.get('/weather', (request,response) => getWeather(request, response) );
 
-app.get('*', () => console.log('default route here') );
+app.get('/events', (request,response) => getEvents(request, response) );
 
+app.get('*', () => console.log('default route here') );
 
 
 // ---------- imports
@@ -112,6 +112,17 @@ function getWeather(request, response) {
 
 }
 
+function getEvents(request, response) {
+
+  let eventBriteUrl = `http://www.eventbriteapi.com/v3/events/search?token=${process.env.EVENTBRITE_PUBLIC_TOKEN}&location.address=${currentLocation.formatted_query}`;
+
+
+  console.log('location');
+  console.log(currentLocation);
+
+  console.log(eventBriteUrl);
+
+}
 
 // ----- error handler
 
