@@ -81,10 +81,7 @@ function getLocation(request, response) {
       let longitude = googleResponse.body.results[0].geometry.location.lng;
       let latitude = googleResponse.body.results[0].geometry.location.lat;
 
-      console.log(`Tried to make location ${currentLocation} from search ${query} at ${latitude},${longitude}`);
-
       currentLocation = new Location(query, formatted_query, latitude, longitude);
-      console.log(`Set location to ${currentLocation}`);
 
       response.send(currentLocation);
 
@@ -95,21 +92,22 @@ function getLocation(request, response) {
 
 }
 
+// ---------- get location from darkSky
+
 function getWeather(request, response) {
 
-  let query = request.query.data;
+  // let query = request.query.data;
 
   let weatherUrl = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${currentLocation.latitude},${currentLocation.longitude}`;
 
-  console.log(weatherUrl);
+  // console.log(weatherUrl);
 
   superAgent.get(weatherUrl)
-    .then(darkSkyResponse => {
+    .then(darkSkyObj => {
 
-      let darkSkyArr = darkSkyResponse.body.daily.data;
+      let localForecast = darkSkyObj.body.daily.data.map(day => new Weather(day));
 
-
-      console.log(darkSkyArr);
+      response.send(localForecast);
 
       //   const dailyWeather = darkSkyArr.map(day => new Weather(day));
       // take weather for each day and feed into weather constructor
