@@ -38,9 +38,9 @@ app.listen(PORT, () => console.log(`Listening on ${PORT}, let's party`) )
 
 // ---------- routes
 
-app.get('/location', (request, response) => {getLocation(request, response);});
+app.get('/location', (request, response) => getLocation(request, response) );
 
-app.get('/weather', () => console.log('hit /weather') );
+app.get('/weather', (request,response) => getWeather(request, response) );
 
 app.get('*', () => console.log('default route here') );
 
@@ -48,7 +48,6 @@ app.get('*', () => console.log('default route here') );
 
 // ---------- imports
 
-const errorHandler = require('./error-handler.js');
 
 // do not fully grok this second line which seems to only be for constructor functions, gotten from https://stackabuse.com/how-to-use-module-exports-in-node-js/ but seems to work
 
@@ -96,7 +95,41 @@ function getLocation(request, response) {
 
 }
 
+function getWeather(request, response) {
 
+  let query = request.query.data;
+
+  let weatherUrl = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${currentLocation.latitude},${currentLocation.longitude}`;
+
+  console.log(weatherUrl);
+
+  superAgent.get(weatherUrl)
+    .then(darkSkyResponse => {
+
+      let darkSkyArr = darkSkyResponse.body.daily.data;
+
+
+      console.log(darkSkyArr);
+
+      //   const dailyWeather = darkSkyArr.map(day => new Weather(day));
+      // take weather for each day and feed into weather constructor
+
+      //   console.log(dailyWeather);
+
+    })
+    .catch(error => {
+      errorHandler(error, request, response)
+    });
+
+}
+
+
+// ----- error handlr
+
+function errorHandler(error, reqest, response) {
+  console.error(error);
+  response.status(500).send('errorHandler says: Something went wrong');
+}
 
 
 // --------------- tests
@@ -105,5 +138,5 @@ function getLocation(request, response) {
 // Weather({summary:'Example daily summary', time: 8287888399});
 // Event({url:'someURL', name: {text:'thisname'}, start: {local:[3,4,5,2,24,5]} });
 
-
-module.exports = {superAgent: superAgent};
+// needed if we're having constructors do their own API calls
+// module.exports = {superAgent: superAgent};

@@ -1,13 +1,13 @@
 function Weather(day) {
 
-  this.forecast = day.summary;
+  this.dailyForecast = day.summary;
   this.time = new Date(day.time * 1000).toString().slice(0,15);
   // *1000 because weather from darksky is different from the whole rest of the internet
 
   this.created = Date.now();
   // for future data freshness functions
 
-  console.log(`weather: ${this.forecast} at ${this.time}`);
+  console.log(`weather: ${this.dailyForecast} at ${this.time}`);
 }
 
 Weather.prototype = {
