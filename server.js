@@ -7,7 +7,6 @@
 let currentLocation = {};
 
 
-
 // ---------- Dependencies
 
 const express = require('express');
@@ -42,8 +41,9 @@ app.get('/location', (request, response) => getLocation(request, response) );
 
 app.get('/weather', (request,response) => getWeather(request, response) );
 
-app.get('*', () => console.log('default route here') );
+app.get('/events', (request,response) => getEvents(request, response) );
 
+app.get('*', () => console.log('default route here') );
 
 
 // ---------- imports
@@ -72,7 +72,6 @@ function getLocation(request, response) {
   let query = request.query.data;
 
   let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
-  console.log(geocodeUrl);
 
   superAgent.get(geocodeUrl)
     .then(googleResponse => {
@@ -112,6 +111,30 @@ function getWeather(request, response) {
 
 }
 
+function getEvents(request, response) {
+
+  let eventBriteUrl = `http://www.eventbriteapi.com/v3/events/search?token=${process.env.EVENTBRITE_PUBLIC_TOKEN}&location.address=${currentLocation.formatted_query}`;
+
+  // console.log(eventBriteUrl);
+
+  superAgent.get(eventBriteUrl)
+    .then(eventBriteObj => {
+
+      // loop just the event list and make that an array of events
+      let eventsArr = eventBriteObj.body.events.map(eventObj => {
+        let event = new Event(eventObj);
+        return event;
+      }
+      )
+      // console.log(eventsArr);
+      response.send(eventsArr);
+    }
+    )
+    .catch(error => {
+      errorHandler(error, request, response)
+    });
+
+}
 
 // ----- error handler
 
