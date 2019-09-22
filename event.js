@@ -6,7 +6,7 @@ function Event(eventObj) {
   this.created = Date.now();
   this.summary = eventObj.summary;
 
-  console.log(`made event ${this.name} at ${this.event_date} link:${this.link} summary: ${this.summary}`);
+  console.log(`made event ${this.name} at ${this.event_date}`);
 
 }
 

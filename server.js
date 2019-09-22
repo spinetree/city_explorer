@@ -72,7 +72,6 @@ function getLocation(request, response) {
   let query = request.query.data;
 
   let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
-  console.log(geocodeUrl);
 
   superAgent.get(geocodeUrl)
     .then(googleResponse => {
@@ -116,11 +115,24 @@ function getEvents(request, response) {
 
   let eventBriteUrl = `http://www.eventbriteapi.com/v3/events/search?token=${process.env.EVENTBRITE_PUBLIC_TOKEN}&location.address=${currentLocation.formatted_query}`;
 
+  // console.log(eventBriteUrl);
 
-  console.log('location');
-  console.log(currentLocation);
+  superAgent.get(eventBriteUrl)
+    .then(eventBriteObj => {
 
-  console.log(eventBriteUrl);
+      // loop just the event list and make that an array of events
+      let eventsArr = eventBriteObj.body.events.map(eventObj => {
+        let event = new Event(eventObj);
+        return event;
+      }
+      )
+      // console.log(eventsArr);
+      response.send(eventsArr);
+    }
+    )
+    .catch(error => {
+      errorHandler(error, request, response)
+    });
 
 }
 
