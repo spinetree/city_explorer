@@ -7,6 +7,7 @@
 let currentLocation;
 
 
+
 // ---------- Dependencies
 
 const express = require('express');
@@ -16,6 +17,7 @@ const superAgent = require('superagent');
 
 // why different syntax here? This is a method dotenv gives us access to?
 require('dotenv').config();
+
 
 
 // ---------- run all the big picture things
@@ -33,16 +35,21 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Listening on ${PORT}, let's party`) )
 
 
+
 // ---------- routes
 
-app.get('/weather', () => console.log('hit /weather') )
-app.get('/location', (request,response) => {
-  console.log('hit /location');
+app.get('/weather', () => console.log('hit /weather') );
+
+app.get('/location', (request, response) => {
+  console.log('response');
+  console.log(response);
   getLocationGoogle(request, response);
 }
-)
+);
 
-app.get('*', () => console.log('default route here') )
+app.get('*', () => console.log('default route here') );
+
+
 
 // ---------- imports
 
@@ -65,11 +72,12 @@ function getLocationGoogle(request, response) {
 
   let query = request.query.data;
   let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${query}&key=${process.env.GEOCODE_API_KEY}`;
+
   console.log(`geocode url: ${geocodeUrl}`);
 
   superAgent.get(geocodeUrl)
     .then(googleResponse => {
-      console.log(googleResponse);
+      // console.log(googleResponse);
       // run through constructor function
       response.send(currentLocation);
     })
